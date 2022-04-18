@@ -1,4 +1,6 @@
 const { Kafka } = require("kafkajs");
+var AWS = require('aws-sdk');
+AWS.config.update({region: 'us-east-2'});
 
 run().then(() => console.log("Done"), err => console.log(err));
 
@@ -18,8 +20,35 @@ async function run() {
   await consumer.run({
    eachMessage: async ({ topic, partition, message }) => {
      console.log({
-       value: message
+       value: message.value
      })
+
+
+    var params = {
+      Destination: { /* required */
+        CcAddresses: [
+        ],
+        ToAddresses: [
+          "hreddy@andrew.cmu.edu"
+        ]
+      },
+      Source: 'hreddy@andrew.cmu.edu', /* required */
+      Template: 'TEMPLATE_NAME', /* required */
+      TemplateData: '{ \"REPLACEMENT_TAG_NAME\":\"REPLACEMENT_VALUE\" }', /* required */
+      ReplyToAddresses: [
+      ],
+    };
+
+    var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendTemplatedEmail(params).promise();
+
+    sendPromise.then(
+      function(data) {
+        console.log(data);
+      }).catch(
+        function(err) {
+        console.error(err, err.stack);
+      });
+
    },
  });
 
