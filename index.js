@@ -7,7 +7,7 @@ run().then(() => console.log("Done"), err => console.log(err));
 async function run() {
     const kafka = new Kafka({
         clientId: 'my-app',
-        brokers: ['b-2.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092', 'b-1.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092','b-3.customer.1awnnt.c6.kafka.us-east-2.amazonaws$
+        brokers: ['b-2.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092', 'b-1.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092','b-3.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092'],
         ssl: false
       })
 
@@ -40,7 +40,7 @@ const msg = Buffer.from(message.value,'hex').toString('utf8');
     Body: { /* required */
       Html: {
        Charset: "UTF-8",
-       Data: `<html> <body> <p> Dear ${myArray[0]}</p> <p>Welcome to the Book store created by hreddy. </p> <p> Exceptionally this time we won’t ask you to click a link to activate your ac$
+       Data: `<html> <body> <p> Dear ${myArray[0]}</p> <p>Welcome to the Book store created by hreddy. </p> <p> Exceptionally this time we won’t ask you to click a link to activate your account. </p></body></html>`
       },
             Text: {
        Charset: "UTF-8",
