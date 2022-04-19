@@ -1,6 +1,6 @@
 const { Kafka } = require("kafkajs");
-var AWS = require('aws-sdk');
-AWS.config.update({region: 'us-east-2', apiVersion: "2010-12-01", accessKeyId: "AKIAVOJM5K4FXNKYTTNX", secretAccessKey:"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"  });
+const nodemailer = require('nodemailer');
+
 
 run().then(() => console.log("Done"), err => console.log(err));
 
@@ -10,6 +10,7 @@ async function run() {
         brokers: ['b-2.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092', 'b-1.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092','b-3.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092'],
         ssl: false
       })
+
 
 
   const consumer = kafka.consumer({ groupId: "" + Date.now() });
@@ -25,49 +26,34 @@ async function run() {
 
 const msg = Buffer.from(message.value,'hex').toString('utf8');
            const myArray = msg.split(" ");
+           let transporter = nodemailer.createTransport({
+            sendmail: true,
+            newline: 'windows',
+            logger: false
+        });
+
+        let mail = {
+          from: 'hreddy@andrew.cmu.edu',
+  
+          // Comma separated list of recipients
+          to: myArray[myArray.length-1],
+  
+          // Subject of the message
+          subject: 'Activate your book store account',
+  
+          // HTML body
+          html:`<html> <body> <p> Dear ${myArray[0]}</p> <p>Welcome to the Book store created by hreddy. </p> <p> Exceptionally this time we won’t ask you to click a link to activate your account. </p></body></html>`,
+  
+          // An array of attachments
+          attachments: [
+          ]
+      };
+
+      let info = await transporter.sendMail(mail);
+      console.log('Message sent successfully as %s', info.messageId);
 
 
-    var params = {
-      Destination: { /* required */
-        CcAddresses: [
-        ],
-        ToAddresses: [
-          myArray[myArray.length-1]
-        ]
-      },
-      Source: 'hreddy@andrew.cmu.edu', /* required */
-     Message: { /* required */
-    Body: { /* required */
-      Html: {
-       Charset: "UTF-8",
-       Data: `<html> <body> <p> Dear ${myArray[0]}</p> <p>Welcome to the Book store created by hreddy. </p> <p> Exceptionally this time we won’t ask you to click a link to activate your account. </p></body></html>`
-      },
-            Text: {
-       Charset: "UTF-8",
-       Data: "TEXT_FORMAT_BODY"
-      }
-     },
-     Subject: {
-      Charset: 'UTF-8',
-      Data: 'Activate your book store account'
-     }
-    },
-      ReplyToAddresses: [
-      ],
-    };
-
-    var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
-
-    sendPromise.then(
-      function(data) {
-        console.log(data);
-      }).catch(
-        function(err) {
-        console.error(err, err.stack);
-      });
    },
  });
 
 }
-
-
