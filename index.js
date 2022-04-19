@@ -1,6 +1,6 @@
 const { Kafka } = require("kafkajs");
 var AWS = require('aws-sdk');
-AWS.config.update({region: 'us-east-2'});
+AWS.config.update({region: 'us-east-2', apiVersion: "2010-12-01", accessKeyId: "AKIAVOJM5K4FXNKYTTNX", secretAccessKey:"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"  });
 
 run().then(() => console.log("Done"), err => console.log(err));
 
@@ -10,7 +10,7 @@ async function run() {
         brokers: ['b-2.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092', 'b-1.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092','b-3.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092'],
         ssl: false
       })
-    
+
 
   const consumer = kafka.consumer({ groupId: "" + Date.now() });
 
@@ -22,8 +22,6 @@ async function run() {
      console.log({
        value: message.value
      })
-
-
     var params = {
       Destination: { /* required */
         CcAddresses: [
@@ -33,13 +31,27 @@ async function run() {
         ]
       },
       Source: 'hreddy@andrew.cmu.edu', /* required */
-      Template: 'TEMPLATE_NAME', /* required */
-      TemplateData: '{ \"REPLACEMENT_TAG_NAME\":\"REPLACEMENT_VALUE\" }', /* required */
+     Message: { /* required */
+    Body: { /* required */
+      Html: {
+       Charset: "UTF-8",
+       Data: "Hiii"
+      },
+      Text: {
+       Charset: "UTF-8",
+       Data: "TEXT_FORMAT_BODY"
+      }
+     },
+     Subject: {
+      Charset: 'UTF-8',
+      Data: 'Test email'
+     }
+    },
       ReplyToAddresses: [
       ],
     };
 
-    var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendTemplatedEmail(params).promise();
+    var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(params).promise();
 
     sendPromise.then(
       function(data) {
@@ -53,3 +65,4 @@ async function run() {
  });
 
 }
+                                                                           
