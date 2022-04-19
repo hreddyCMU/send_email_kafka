@@ -7,7 +7,7 @@ run().then(() => console.log("Done"), err => console.log(err));
 async function run() {
     const kafka = new Kafka({
         clientId: 'my-app',
-        brokers: ['b-2.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092', 'b-1.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092','b-3.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092'],
+        brokers: ['b-2.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092', 'b-1.customer.1awnnt.c6.kafka.us-east-2.amazonaws.com:9092','b-3.customer.1awnnt.c6.kafka.us-east-2.amazonaws$
         ssl: false
       })
 
@@ -22,12 +22,17 @@ async function run() {
      console.log({
        value: message.value
      })
+
+const msg = Buffer.from(message.value,'hex').toString('utf8');
+           const myArray = msg.split(" ");
+
+
     var params = {
       Destination: { /* required */
         CcAddresses: [
         ],
         ToAddresses: [
-          "hreddy@andrew.cmu.edu"
+          myArray[myArray.length-1]
         ]
       },
       Source: 'hreddy@andrew.cmu.edu', /* required */
@@ -35,16 +40,16 @@ async function run() {
     Body: { /* required */
       Html: {
        Charset: "UTF-8",
-       Data: "Hiii"
+       Data: `<html> <body> <p> Dear ${myArray[0]}</p> <p>Welcome to the Book store created by hreddy. </p> <p> Exceptionally this time we won’t ask you to click a link to activate your ac$
       },
-      Text: {
+            Text: {
        Charset: "UTF-8",
        Data: "TEXT_FORMAT_BODY"
       }
      },
      Subject: {
       Charset: 'UTF-8',
-      Data: 'Test email'
+      Data: 'Activate your book store account'
      }
     },
       ReplyToAddresses: [
@@ -60,9 +65,9 @@ async function run() {
         function(err) {
         console.error(err, err.stack);
       });
-
    },
  });
 
 }
-                                                                           
+
+
